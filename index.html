@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>哪种解压方式适合你</title>
+<style>
+  :root{
+    --bg:#f4f2ee;
+    --card:#ffffff;
+    --ink:#2e3330;
+    --ink-soft:#6b716c;
+    --line:#e8e5df;
+    --accent:#5f7a6b;
+    --accent-soft:#eaf0ec;
+    --shadow:0 12px 32px rgba(70,80,72,.08);
+    --radius:20px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    min-height:100vh;
+    line-height:1.7;
+  }
+  .wrap{max-width:480px;margin:0 auto;padding:28px 20px 48px;}
+
+  /* ===== 通用卡片 ===== */
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:30px 24px;
+  }
+  .hidden{display:none!important;}
+
+  /* ===== 首页 ===== */
+  .hero{text-align:center;padding-top:18px;}
+  .hero .eyebrow{
+    font-size:13px;letter-spacing:.28em;color:var(--accent);
+    text-transform:uppercase;margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:clamp(26px,6vw,32px);
+    font-weight:600;letter-spacing:.04em;margin-bottom:16px;
+  }
+  .hero p{color:var(--ink-soft);font-size:15px;margin-bottom:10px;}
+  .intro{
+    background:var(--accent-soft);border-radius:16px;
+    padding:18px;margin:24px 0;
+  }
+  .intro p{font-size:14px;color:var(--ink-soft);margin-bottom:6px;}
+  .intro p:last-child{margin-bottom:0;}
+  .btn{
+    display:block;width:100%;border:none;cursor:pointer;
+    background:var(--accent);color:#fff;font-size:16px;font-weight:500;
+    padding:15px;border-radius:14px;letter-spacing:.08em;
+    transition:opacity .2s ease,transform .2s ease;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn-ghost{
+    background:transparent;color:var(--ink-soft);
+    border:1px solid var(--line);
+  }
+  .note{font-size:12px;color:#a9aca6;text-align:center;margin-top:16px;}
+
+  /* ===== 答题页 ===== */
+  .progress-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:10px;font-size:13px;color:var(--ink-soft);
+  }
+  .progress-head b{color:var(--accent);font-weight:600;}
+  .bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:28px;}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s ease;}
+  .q-title{font-size:18px;font-weight:600;margin-bottom:22px;line-height:1.6;}
+  .options{display:flex;flex-direction:column;gap:12px;}
+  .opt{
+    border:1px solid var(--line);border-radius:16px;padding:16px 16px;
+    cursor:pointer;font-size:15px;background:#fbfaf8;
+    transition:all .2s ease;display:flex;gap:12px;align-items:flex-start;
+  }
+  .opt .tag{
+    flex:none;width:24px;height:24px;border-radius:8px;background:var(--line);
+    color:var(--ink-soft);font-size:13px;display:flex;align-items:center;justify-content:center;
+  }
+  .opt.selected{border-color:var(--accent);background:var(--accent-soft);}
+  .opt.selected .tag{background:var(--accent);color:#fff;}
+  .nav{display:flex;gap:12px;margin-top:28px;}
+  .nav .btn{flex:1;padding:13px;}
+
+  /* ===== 结果页 ===== */
+  .result-head{text-align:center;margin-bottom:24px;}
+  .result-head .eyebrow{font-size:13px;letter-spacing:.24em;color:var(--accent);margin-bottom:10px;}
+  .result-head h2{font-size:24px;font-weight:600;margin-bottom:8px;}
+  .result-head .sub{color:var(--ink-soft);font-size:14px;}
+  .score-row{display:flex;gap:10px;margin:22px 0;}
+  .score-cell{
+    flex:1;background:#fbfaf8;border:1px solid var(--line);border-radius:14px;
+    padding:14px 8px;text-align:center;
+  }
+  .score-cell .n{font-size:20px;font-weight:600;color:var(--ink);}
+  .score-cell .l{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+  .score-cell.top{background:var(--accent-soft);border-color:var(--accent);}
+  .score-cell.top .n{color:var(--accent);}
+  .block{margin-top:26px;}
+  .block h3{font-size:16px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .block h3::before{content:"";width:18px;height:2px;background:var(--accent);border-radius:2px;}
+  .block p{font-size:14.5px;color:var(--ink-soft);}
+  .list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  .list li{
+    background:#fbfaf8;border:1px solid var(--line);border-radius:14px;
+    padding:13px 15px;font-size:14.5px;color:var(--ink);
+  }
+  .list li b{color:var(--accent);}
+  .warn{
+    background:#faf5ee;border:1px solid #eee2cf;border-radius:14px;
+    padding:15px;font-size:14px;color:#8a7448;
+  }
+  .actions{margin-top:30px;display:flex;flex-direction:column;gap:12px;}
+
+  /* 入场动画 */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .fade{animation:fadeUp .35s ease;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== 首页 ===== -->
+  <section id="page-start" class="fade">
+    <div class="card hero">
+      <div class="eyebrow">Stress Relief Test</div>
+      <h1>哪种解压方式适合你</h1>
+      <p>每个人消化压力的方式都不一样。</p>
+      <p>有的人需要动起来，有的人需要静下来。</p>
+      <div class="intro">
+        <p>本测试共 <b>18</b> 道选择题，请凭第一直觉作答，答案没有好坏对错。</p>
+        <p>完成后将生成专属于你的解压方式与心理分析。</p>
+      </div>
+      <button class="btn" onclick="startTest()">开始测试</button>
+      <p class="note">所有结果仅在你的浏览器本地计算，不会上传任何信息</p>
+    </div>
+  </section>
+
+  <!-- ===== 答题页 ===== -->
+  <section id="page-quiz" class="hidden">
+    <div class="card">
+      <div class="progress-head">
+        <span>答题进度</span>
+        <span><b id="curNum">1</b> / 18</span>
+      </div>
+      <div class="bar"><i id="barFill" style="width:0%"></i></div>
+      <h2 class="q-title" id="qTitle"></h2>
+      <div class="options" id="optBox"></div>
+      <div class="nav">
+        <button class="btn btn-ghost" id="prevBtn" onclick="prevQ()">上一题</button>
+        <button class="btn" id="nextBtn" onclick="nextQ()">下一题</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 结果页 ===== -->
+  <section id="page-result" class="hidden">
+    <div class="card">
+      <div class="result-head">
+        <div class="eyebrow">Your Result</div>
+        <h2 id="rTitle"></h2>
+        <div class="sub" id="rSub"></div>
+      </div>
+
+      <div class="score-row" id="scoreRow"></div>
+
+      <div class="block">
+        <h3>心理分析</h3>
+        <p id="rAnalysis"></p>
+      </div>
+
+      <div class="block">
+        <h3>最适合你的解压方式</h3>
+        <ul class="list" id="rTips"></ul>
+      </div>
+
+      <div class="block">
+        <h3>需要留意的地方</h3>
+        <div class="warn" id="rWarn"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" onclick="restart()">重新测试</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ===== 题库：每题四个选项，依次对应 A 自然疗愈 / B 运动释放 / C 社交倾诉 / D 独处内省 ===== */
+const QUESTIONS = [
+  { q:"压力最大的时候，你最想逃去哪里？", o:["去公园、山里走走，亲近自然","去健身房跑一场，出身汗","约朋友出来吐槽、聚餐","一个人待着，谁也别打扰"] },
+  { q:"难得的空闲周末，你更想怎么过？", o:["去郊外晒太阳、露营发呆","打球、跑步、爬山等运动","参加聚会，和人热闹聊天","在家看书、追剧、安静放空"] },
+  { q:"情绪低落时，哪种方式最能让你缓过来？", o:["看看风景、晒晒太阳，让心静下来","剧烈运动一场，把情绪释放掉","找人倾诉，说完就轻松了","独处整理思绪，慢慢消化"] },
+  { q:"你理想中的解压假期是？", o:["海边或山林的安静民宿","户外徒步、骑行、拓展运动","和朋友结伴旅行、吃逛玩","在家宅着，按自己节奏生活"] },
+  { q:"压力堆积时，你身体最先出现什么反应？", o:["胸闷烦躁，想出门透透气","浑身紧绷，总想动一动","心里憋得慌，想说出来","脑子很乱，想一个人安静"] },
+  { q:"哪种环境最让你感到放松？", o:["有绿植、阳光、空气清新的地方","场地开阔，可以跑跳活动","人声热闹，有朋友陪伴","安静整洁、只属于自己的小空间"] },
+  { q:"心情不好时，你更愿意怎么做？", o:["出门散步，边走边想事情","去运动，用体力消耗情绪","打电话约朋友聊一聊","写日记、听歌，自我消化"] },
+  { q:"你觉得最有效的解压动作是？", o:["深呼吸、望向远处、接触自然","出汗、拉伸、让身体舒展开","和人说笑，被理解和安慰","关掉消息，回归自己的节奏"] },
+  { q:"面对工作或学业压力，你通常？", o:["中间抽空出去透透气","下班后用运动解压","找同事朋友吐槽分担","下班后独处回血，不想应酬"] },
+  { q:"下面哪种活动更吸引你？", o:["养花种草、逛公园、喂小动物","瑜伽、舞蹈、球类、徒步","桌游、聚餐、卡拉OK","阅读、画画、冥想、看纪录片"] },
+  { q:"情绪上头的那一刻，你的本能反应是？", o:["先离开现场，找个自然环境平复","去动一动，把火气发泄掉","马上找人说，不能憋着","先自己冷静，想清楚再表态"] },
+  { q:"你认为自己的压力主要来自？", o:["生活节奏太快，缺少喘息空间","久坐不动，身体积累了疲劳","人际关系的复杂和摩擦","内心想法太多，长期消耗自己"] },
+  { q:"最让你有「重新充电」感觉的瞬间是？", o:["被自然美景治愈，内心平静","运动后疲惫又畅快的状态","和朋友深度聊天后被理解","独处之后思路清晰、精力恢复"] },
+  { q:"你的解压消费更偏向哪一类？", o:["户外用品、绿植、香薰、自然周边","运动装备、健身课、舞蹈课","聚餐、演出、社交娱乐门票","书籍、乐器、影音、手账文具"] },
+  { q:"压力很大的夜晚，你通常怎么度过？", o:["开窗透气，看看夜景和星空","在家做拉伸或跳操出出汗","约人夜宵，或语音聊到深夜","关灯独处，听音乐慢慢入睡"] },
+  { q:"别人眼中放松下来的你是什么样？", o:["总喜欢往户外和自然里跑","停不下来，总有运动安排","朋友多，是聚会里的活跃分子","偏安静，需要保留自己的空间"] },
+  { q:"如果一天只能做一件事解压，你选？", o:["去公园或郊外待半天","做一小时自己喜欢的运动","和信任的人吃顿饭、聊聊天","在家安静地做自己喜欢的事"] },
+  { q:"你最希望解压后达到的状态是？", o:["内心平静、舒畅、重新充上电","身体轻松，情绪被彻底释放","心情开朗，有人陪伴不孤单","思路清晰，找回内在的秩序感"] }
+];
+
+/* ===== 四类结果档案 ===== */
+const TYPES = {
+  A:{
+    label:"自然疗愈型",
+    sub:"在山水与呼吸之间，慢慢把自己还给自己",
+    analysis:"你是一个内心敏感、感知力很强的人。压力来临时，你最先需要的不是解决问题，而是先让紧绷的神经系统缓下来。你对环境气息、光线、声音都比较在意，嘈杂拥挤的空间会进一步消耗你；而当你置身于自然、绿植、阳光或水边，情绪会自然而然地松动。你习惯用「慢下来」的方式消化情绪，不喜欢硬碰硬，也不擅长在人群中伪装坚强。对你来说，疗愈的关键是重建与自己身体、与环境之间的连接，让心绪重新落到平稳的节奏上。",
+    tips:[
+      "<b>定期走入自然：</b>哪怕只是家附近的公园、河边或有绿植的街角，每周留一段不赶时间的户外时间。",
+      "<b>把自然元素带进生活：</b>养几盆绿植、使用木质或棉麻质感的物品、点一支淡香薰，营造安静柔和的居家氛围。",
+      "<b>练习呼吸与慢观察：</b>感到烦躁时，先停下手中的事，做几组深呼吸，看看远处的树或天空，让注意力从思绪回到当下。",
+      "<b>选择低刺激的放松方式：</b>散步、晒太阳、听流水或雨声、写一段轻松的日记，都比高强度娱乐更适合你。"
+    ],
+    warn:"你容易在压力大时一味「逃避到安静里」，把问题积压起来。自然疗愈能平复情绪，但回避太久会让待办和情绪重新堆积。建议在舒缓之后，留出一小段时间直面需要处理的事，哪怕从最小的一步开始。"
+  },
+  B:{
+    label:"运动释放型",
+    sub:"情绪堵在身体里，就用汗水把它带出来",
+    analysis:"你是一个能量充沛、情绪表达直接的人。压力在你身上往往先转化为身体上的紧绷：烦躁、坐不住、胸口发闷。你不太擅长靠安静冥想消化情绪，反而在身体充分活动之后，思路会变清晰、情绪会被释放掉。运动对你而言不是任务，而是一种情绪出口——跑步、球类、舞蹈、拉伸等能让你出汗或舒展身体的活动，都会迅速降低你的焦虑值。你性格里有不服输、愿意行动的一面，只要身体动起来，心理上的掌控感也会跟着回来。",
+    tips:[
+      "<b>把运动设为固定泄压阀：</b>每周安排 3 次左右的出汗运动，不必追求强度，能让身体活动开即可。",
+      "<b>情绪上头时先动再想：</b>感到烦躁或愤怒时，先去快走、做几组拉伸或跳绳，等身体降温后再处理问题。",
+      "<b>搭配低强度恢复：</b>瑜伽、散步、拉伸等恢复性运动，可以和高强度运动交替，避免身体过度疲劳。",
+      "<b>用身体仪式收尾：</b>运动后记录一下自己的情绪变化，慢慢你会更清楚哪种运动最能安抚自己。"
+    ],
+    warn:"你习惯用「发泄」代替梳理情绪，有时运动之后问题本身并没有被看见。长期靠硬扛和出汗压情绪，可能积累成身体疲劳或情绪爆发。建议在运动之外，留一点时间觉察：这份压力到底来自哪里，哪些是可以沟通或调整的。"
+  },
+  C:{
+    label:"社交倾诉型",
+    sub:"被听见、被理解，是你最好的松弛剂",
+    analysis:"你是一个外向、重连接的人，情绪在关系中流动。对你来说，压力最怕憋着——一旦独自闷在心里，小事也会被放大；而当你把感受说给信任的人听，得到回应、陪伴或笑声之后，心结往往就解开了大半。你擅长感知他人，也愿意在社交中获得能量。聚会、聊天、被理解和被需要的感觉，都能让你快速恢复状态。不过你也要留意，社交有时会变成逃避独处的方式，真正的情绪课题仍需要你自己沉淀。",
+    tips:[
+      "<b>建立固定的倾诉渠道：</b>找 1–2 位让你安心的人，约定在压力大时可以随时聊一聊，不必顾虑打扰。",
+      "<b>选择轻松的社交场景：</b>聚餐、散步、看演出、结伴运动等低压力活动，比高强度应酬更适合为你充电。",
+      "<b>学习表达而非抱怨：</b>倾诉时试着说清自己的感受和需要，而不只是反复吐槽，这样更容易获得真正的支持。",
+      "<b>也留意自己对他人情绪的承接：</b>你共情力强，别把别人的烦恼都背到自己身上，学会在关系里保留边界。"
+    ],
+    warn:"你有时会靠不断社交来回避独处和自我面对，热闹散场后反而更容易空虚。建议每周给自己留出安静的独处时间，练习和自己对话；同时分清哪些关系真的支持你，避免消耗性的人情往来。"
+  },
+  D:{
+    label:"独处内省型",
+    sub:"关上门，回到内心，秩序感会自己长出来",
+    analysis:"你是一个内心世界丰富、习惯向内消化的人。压力来临时，你需要的是空间而不是建议：旁人的安慰往往会让你更烦躁，只有在独处、不被打扰的状态下，你才能理清思绪、恢复秩序。你善于反思，喜欢通过阅读、音乐、写作、思考等方式整理自己的情绪和想法。独处对你不是孤僻，而是必要的「回血」过程。你内在有较强的自主性，但也要注意：过度封闭可能让你积压情绪、推迟求助，需要在自我消化与适度表达之间找到平衡。",
+    tips:[
+      "<b>预留专属独处时间：</b>每天或每周固定一段「免打扰」时光，关掉社交软件，按自己的节奏安排生活。",
+      "<b>用创作梳理内心：</b>写日记、做手账、画画、整理收藏或听音乐，把杂乱的想法外化出来，情绪会随之变轻。",
+      "<b>练习结构化复盘：</b>压力大时把事情、感受和可采取的步骤写下来，分清「能改变的」和「暂时只能接受的」。",
+      "<b>保留少量深度连接：</b>独处之外，维持 1–2 段不必频繁联系、但彼此信任的关系，在需要时可以放心开口。"
+    ],
+    warn:"你容易习惯独自承受，遇到难题也倾向于自己硬扛，长此以往可能形成情绪内耗。请记得：独处整理情绪和封闭自己是两回事。当压力持续超过两周、睡眠或情绪明显受影响时，主动找信任的人或专业渠道聊一聊，并不是软弱。"
+  }
+};
+
+/* ===== 状态与逻辑 ===== */
+const TYPE_KEYS = ["A","B","C","D"];
+const TYPE_NAMES = {A:"自然疗愈",B:"运动释放",C:"社交倾诉",D:"独处内省"};
+let current = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+
+function showPage(id){
+  ["page-start","page-quiz","page-result"].forEach(p=>{
+    document.getElementById(p).classList.add("hidden");
+  });
+  const el = document.getElementById(id);
+  el.classList.remove("hidden");
+  el.classList.remove("fade");
+  void el.offsetWidth; /* 重启动画 */
+  el.classList.add("fade");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function startTest(){
+  current = 0;
+  answers.fill(null);
+  renderQ();
+  showPage("page-quiz");
+}
+
+function renderQ(){
+  const item = QUESTIONS[current];
+  document.getElementById("curNum").textContent = current + 1;
+  document.getElementById("barFill").style.width = ((current+1)/QUESTIONS.length*100) + "%";
+  document.getElementById("qTitle").textContent = (current+1) + ". " + item.q;
+
+  const box = document.getElementById("optBox");
+  box.innerHTML = "";
+  item.o.forEach((text,idx)=>{
+    const div = document.createElement("div");
+    div.className = "opt" + (answers[current]===idx ? " selected" : "");
+    div.innerHTML = '<span class="tag">'+String.fromCharCode(65+idx)+'</span><span>'+text+'</span>';
+    div.onclick = ()=>{ answers[current]=idx; renderQ(); };
+    box.appendChild(div);
+  });
+
+  document.getElementById("prevBtn").style.visibility = current===0 ? "hidden" : "visible";
+  document.getElementById("nextBtn").textContent = current===QUESTIONS.length-1 ? "查看结果" : "下一题";
+}
+
+function nextQ(){
+  if(answers[current]===null){ alert("请先选择一个答案"); return; }
+  if(current < QUESTIONS.length-1){ current++; renderQ(); }
+  else{ calcResult(); showPage("page-result"); }
+}
+
+function prevQ(){
+  if(current>0){ current--; renderQ(); }
+}
+
+function calcResult(){
+  const score = {A:0,B:0,C:0,D:0};
+  answers.forEach(ans=>{ score[TYPE_KEYS[ans]]++; });
+  const sorted = TYPE_KEYS.slice().sort((a,b)=>score[b]-score[a]);
+  const main = sorted[0];
+  const sub = sorted[1];
+  const t = TYPES[main];
+
+  document.getElementById("rTitle").textContent = t.label;
+  document.getElementById("rSub").textContent = t.sub;
+  document.getElementById("rAnalysis").textContent = t.analysis;
+  document.getElementById("rWarn").textContent = t.warn;
+
+  const tips = t.tips.slice();
+  tips.push("<b>你的辅助倾向：</b>「"+TYPE_NAMES[sub]+"」倾向也比较明显，状态好时可以把它作为补充方式，和主导方式搭配使用。");
+  document.getElementById("rTips").innerHTML = "";
+  tips.forEach(li=>{
+    const el = document.createElement("li");
+    el.innerHTML = li;
+    document.getElementById("rTips").appendChild(el);
+  });
+
+  const row = document.getElementById("scoreRow");
+  row.innerHTML = "";
+  TYPE_KEYS.forEach(k=>{
+    const cell = document.createElement("div");
+    cell.className = "score-cell" + (k===main ? " top" : "");
+    cell.innerHTML = '<div class="n">'+score[k]+'</div><div class="l">'+TYPE_NAMES[k]+'</div>';
+    row.appendChild(cell);
+  });
+}
+
+function restart(){ showPage("page-start"); }
+</script>
+</body>
+</html>
